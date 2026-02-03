@@ -12,9 +12,11 @@ import (
 	"github.com/ishaqcherry9/sqlx/pkg/frag"
 )
 
-type DB interface {
+type D interface {
 	D() *sql.DB
+}
 
+type DB interface {
 	Exec(context.Context, frag.Fragment) (sql.Result, error)
 	Query(context.Context, frag.Fragment) (*sql.Rows, error)
 	Tx(context.Context, func(context.Context) error) error

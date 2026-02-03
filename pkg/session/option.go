@@ -1,12 +1,13 @@
 package session
 
 import (
-	"database/sql"
 	"net/url"
 	"time"
 
 	"github.com/xoctopus/x/misc/must"
 	"github.com/xoctopus/x/textx"
+
+	"github.com/ishaqcherry9/sqlx/internal/sql/adaptor"
 )
 
 type EndpointOption struct {
@@ -31,11 +32,13 @@ func (o *EndpointOption) SetDefault() {
 	o.MaxIdleTime = time.Hour
 }
 
-func (o *EndpointOption) Apply(db *sql.DB) {
-	db.SetMaxOpenConns(o.MaxOpen)
-	db.SetMaxIdleConns(o.MaxIdle)
-	db.SetConnMaxLifetime(o.MaxLifetime)
-	db.SetConnMaxIdleTime(o.MaxIdleTime)
+func (o *EndpointOption) Apply(d adaptor.DB) {
+	if db, ok := d.(adaptor.D); ok {
+		db.D().SetMaxOpenConns(o.MaxOpen)
+		db.D().SetMaxIdleConns(o.MaxIdle)
+		db.D().SetConnMaxLifetime(o.MaxLifetime)
+		db.D().SetConnMaxIdleTime(o.MaxIdleTime)
+	}
 }
 
 type AdaptorOption struct {
