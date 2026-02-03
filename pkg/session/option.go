@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/xoctopus/confx/pkg/types"
 	"github.com/xoctopus/x/misc/must"
 	"github.com/xoctopus/x/textx"
 
@@ -17,10 +18,10 @@ type EndpointOption struct {
 
 	MultiStatements bool
 
-	MaxOpen     int           `url:"-"`
-	MaxIdle     int           `url:"-"`
-	MaxLifetime time.Duration `url:"-"`
-	MaxIdleTime time.Duration `url:"-"`
+	MaxOpen     int            `url:"-"`
+	MaxIdle     int            `url:"-"`
+	MaxLifetime types.Duration `url:"-"`
+	MaxIdleTime types.Duration `url:"-"`
 }
 
 func (o *EndpointOption) SetDefault() {
@@ -28,16 +29,16 @@ func (o *EndpointOption) SetDefault() {
 	o.MultiStatements = true
 	o.MaxOpen = 100
 	o.MaxIdle = 50
-	o.MaxLifetime = time.Hour
-	o.MaxIdleTime = time.Hour
+	o.MaxLifetime = types.Duration(time.Hour)
+	o.MaxIdleTime = types.Duration(time.Hour)
 }
 
 func (o *EndpointOption) Apply(d adaptor.DB) {
 	if db, ok := d.(adaptor.D); ok {
 		db.D().SetMaxOpenConns(o.MaxOpen)
 		db.D().SetMaxIdleConns(o.MaxIdle)
-		db.D().SetConnMaxLifetime(o.MaxLifetime)
-		db.D().SetConnMaxIdleTime(o.MaxIdleTime)
+		db.D().SetConnMaxLifetime(time.Duration(o.MaxLifetime))
+		db.D().SetConnMaxIdleTime(time.Duration(o.MaxIdleTime))
 	}
 }
 
