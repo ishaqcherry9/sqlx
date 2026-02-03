@@ -13,6 +13,8 @@ import (
 )
 
 type DB interface {
+	D() *sql.DB
+
 	Exec(context.Context, frag.Fragment) (sql.Result, error)
 	Query(context.Context, frag.Fragment) (*sql.Rows, error)
 	Tx(context.Context, func(context.Context) error) error

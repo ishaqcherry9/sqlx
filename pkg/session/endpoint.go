@@ -55,6 +55,7 @@ func (d *Endpoint) Init(ctx context.Context) error {
 	}
 
 	d.db = db
+	d.Option.Apply(d.db.D())
 
 	if !d.Readonly.IsZero() {
 		if !d.Readonly.IsZero() {
@@ -74,6 +75,7 @@ func (d *Endpoint) Init(ctx context.Context) error {
 			return err
 		}
 		d.ro = db
+		d.Option.Apply(d.ro.D())
 	}
 
 	register(d.Name(), d.catalog)

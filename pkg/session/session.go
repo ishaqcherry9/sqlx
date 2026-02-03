@@ -59,6 +59,20 @@ func For(ctx context.Context, m any) Session {
 	return nil
 }
 
+func MayFor(ctx context.Context, m any) (Session, bool) {
+	switch x := m.(type) {
+	case interface{ Unwrap() builder.Model }:
+		return MayFor(ctx, x.Unwrap())
+	case string:
+		return MayFrom(ctx, x)
+	case builder.Model:
+		if s, ok := catalogs.Load(x.TableName()); ok {
+			return MayFrom(ctx, s)
+		}
+	}
+	return nil, false
+}
+
 type tSessionKey struct {
 	name string
 }
@@ -68,6 +82,12 @@ func From(ctx context.Context, name string) Session {
 	s, ok := ctx.Value(tSessionKey{name}).(Session)
 	must.BeTrueF(ok, "missing session: %s", name)
 	return s
+}
+
+// MayFrom retrieve Session from ctx by Session.Name
+func MayFrom(ctx context.Context, name string) (Session, bool) {
+	s, ok := ctx.Value(tSessionKey{name}).(Session)
+	return s, ok
 }
 
 // With injects Session
